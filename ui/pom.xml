@@ -1,0 +1,391 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.sapient.daycq</groupId>
+		<artifactId>daycq-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+	<groupId>com.sapient.daycq</groupId>
+	<artifactId>daycq-ui</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+    <name>DayCQ UI</name>
+    <description>
+        DayCQ UI project
+    </description>
+	<properties>
+		<!-- Edit active version numbers below -->
+		<!-- ========================== -->
+		<core.version>${project.version}</core.version>
+		<!-- ========================== -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<core.name>daycq-core</core.name>
+		<project.groupId>com.sapient.daycq</project.groupId>
+		<install.dir>
+			<!--${project.build.directory}/classes/jcr_root/apps/Kelloggs/Global/com.kelloggs.GlobalBundle/install-->
+			${project.build.directory}/classes/jcr_root/apps/sapient/daycq/install
+		</install.dir>
+
+	<!--<scheduler.install.dir>
+			${project.build.directory}/classes/jcr_root/apps/dlp/com.dlp.cms.HDLPEventExpiryScheduler/install
+		</scheduler.install.dir>
+   
+		<profanity.install.dir>
+			${project.build.directory}/classes/jcr_root/apps/Kelloggs/Global/com.kelloggs.inversoft.fascade/install
+		</profanity.install.dir>
+     -->
+	</properties>
+
+	<build>
+		<resources>
+			<!-- filter meta information to get some properties into the files -->
+			<resource>
+				<directory>
+					${basedir}/src/main/content/META-INF
+				</directory>
+
+				<!--excludes>
+					<exclude>vault/**</exclude>
+				<excludes-->
+
+				<targetPath>META-INF</targetPath>
+				<filtering>true</filtering>
+			</resource>
+			<!-- exclude .vlt control files and tests -->
+			<resource>
+				<directory>
+					${basedir}/src/main/content/jcr_root
+				</directory>
+				<excludes>
+					<!--				
+					<exclude>apps/dlp/com.dlp.cms.HDLPBundle/**</exclude>
+					<exclude>apps/dlp/com.dlp.cms.HDLPBundle/src/**</exclude>
+	 				<exclude>apps/dlp/com.dlp.cms.HDLPBundle/lib/**</exclude>
+                    <exclude>apps/dlp/com.dlp.cms.HDLPBundle/com.dlp.cms.HDLPBundle.bnd</exclude> 
+					
+					<exclude>apps/dlp/com.dlp.cms.HDLPEventExpiryScheduler/src/**</exclude>					
+					<exclude>apps/dlp/com.dlp.cms.HDLPEventExpiryScheduler/com.dlp.cms.HDLPEventExpiryScheduler.bnd</exclude>
+					<exclude>apps/dlp/com.hyatt.dlp/**</exclude>
+                    -->
+					<!--<include>apps/Kelloggs/Global/com.kelloggs.GlobalBundle/src/main/resources/**</include>-->
+					<!-- <exclude>apps/Kelloggs/Global/com.kelloggs.GlobalBundle/install/**</exclude> -->
+					<!-- <exclude>apps/Kelloggs/Global/com.kelloggs.GlobalBundle/src/**</exclude> -->
+					<!--<exclude>apps/Kelloggs/Global/com.kelloggs.GlobalBundle/src/main/java/**</exclude>-->
+					<!--<exclude>apps/Kelloggs/Global/com.kelloggs.inversoft.fascade/**</exclude>-->
+					<exclude>apps/sling/**</exclude>
+					<exclude>content/**</exclude>
+					<exclude>var/**</exclude>
+					<exclude>**/*.bak</exclude>
+					<exclude>**/*.backup</exclude>
+					<exclude>**/*.arc</exclude>
+					<exclude>**/*.old</exclude>
+					<exclude>**/*.orig</exclude>
+					<exclude>**/.svn</exclude>
+					<exclude>**/.vlt</exclude>
+					<exclude>**/.vltignore</exclude>
+					<exclude>**/.DS_Store</exclude>										
+				</excludes>
+				<targetPath>jcr_root</targetPath>
+			</resource>
+		</resources>
+
+
+		<plugins>
+			<!-- copy the dependant bundles -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<id>copy-bundles</id>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>
+										${project.groupId}
+									</groupId>
+									<artifactId>daycq-core</artifactId>
+									<outputDirectory>
+										${install.dir}
+									</outputDirectory>
+								</artifactItem>
+							<!--	
+								<artifactItem>
+									<groupId>
+										${project.groupId}
+									</groupId>
+								    <artifactId>platform-core</artifactId>
+								   	<outputDirectory>
+										${profanity.install.dir}
+									</outputDirectory>
+								</artifactItem>
+							
+								<artifactItem>
+									<groupId>
+										${project.groupId}
+									</groupId>
+								    <artifactId>dlp-scheduler</artifactId>
+								   	<outputDirectory>
+										${scheduler.install.dir}
+									</outputDirectory>
+								</artifactItem>
+							-->
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+
+
+	<profiles>
+        <profile>
+            <id>local-deploy</id>
+            <build>
+            <plugins>
+				<plugin>
+				<groupId>com.day.jcr.vault</groupId>
+				<artifactId>maven-vault-plugin</artifactId>
+				<version>0.0.10</version>
+				<executions>
+					<execution>
+						<id>install-package</id>
+						<goals>
+							<goal>install</goal>
+						</goals>
+						<configuration>
+							<packageFile>
+								${project.build.directory}/${project.build.finalName}.jar
+							</packageFile>
+							<targetURL>
+								http://localhost:4502/crx/packmgr/service.jsp
+							</targetURL>
+							<userId>${cq.user}</userId>
+							<password>${cq.password}</password>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>commons-httpclient</groupId>
+						<artifactId>commons-httpclient</artifactId>
+						<version>3.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.sonatype.plexus</groupId>
+						<artifactId>plexus-sec-dispatcher</artifactId>
+						<version>1.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.sonatype.plexus</groupId>
+						<artifactId>plexus-cipher</artifactId>
+						<version>1.7</version>
+					</dependency>
+					<dependency>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+						<version>1.6.6</version>
+					</dependency>
+					<dependency>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+						<version>1.1.1</version>
+					</dependency>
+					<dependency>
+						<groupId>commons-codec</groupId>
+						<artifactId>commons-codec</artifactId>
+						<version>20041127.091804</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		 </plugins>
+          </build>
+
+       </profile>
+	   
+</profiles>
+
+
+	<!-- ====================================================================== -->
+	<!-- D E P E N D E N C I E S                                                -->
+	<!-- ====================================================================== -->
+	<dependencies>
+		<dependency>
+            <groupId>com.sapient.daycq</groupId>
+            <artifactId>daycq-core</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
+<!--
+		<dependency>
+            <groupId>com.platform.cq5</groupId>
+            <artifactId>dlp-scheduler</artifactId> 
+	        <artifactId>platform-scheduler</artifactId> 
+            <version>${project.version}</version>
+        </dependency> 
+-->
+<!--
+       <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sample-interface</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+-->
+		<!-- Apache Sling Dependencies -->
+<!--
+// these are not needed as the UI project does not have compiled code at this time
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.commons.json</artifactId>
+			<version>2.0.3-incubator-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.api</artifactId>
+			<version>2.0.3-incubator-R720667</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>
+				org.apache.sling.scripting.jsp.taglib
+			</artifactId>
+			<version>2.0.3-incubator-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.i18n</artifactId>
+			<version>2.0.1-incubator</version>
+			<scope>provided</scope>
+		</dependency>
+ -->
+		<!-- Day Commons Dependencies -->
+<!--
+		<dependency>
+			<groupId>com.day.commons</groupId>
+			<artifactId>day-commons-text</artifactId>
+			<version>1.1.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.commons</groupId>
+			<artifactId>day-commons-misc</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.commons</groupId>
+			<artifactId>day-commons-gfx</artifactId>
+			<version>2.0.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.commons</groupId>
+			<artifactId>day-commons-jstl</artifactId>
+			<version>1.1.2</version>
+			<scope>provided</scope>
+		</dependency>
+ -->
+		<!-- Day WCM Dependencies -->
+ <!--
+ 		<dependency>
+			<groupId>com.day.cq.wcm</groupId>
+			<artifactId>cq-wcm-core</artifactId>
+			<version>5.1.20</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.cq.wcm</groupId>
+			<artifactId>cq-wcm-api</artifactId>
+			<version>5.1.20</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.cq.wcm</groupId>
+			<artifactId>cq-wcm-foundation</artifactId>
+			<version>5.1.20</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.cq.wcm</groupId>
+			<artifactId>cq-wcm-taglib</artifactId>
+			<version>5.1.20</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.cq</groupId>
+			<artifactId>cq-widgets</artifactId>
+			<version>5.1.18</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.day.cq</groupId>
+			<artifactId>cq-tagging</artifactId>
+			<version>5.1.18</version>
+		</dependency>
+ -->
+		<!-- Apache Jackrabbit Dependencies -->
+<!--
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-jcr-commons</artifactId>
+			<version>1.4.2</version>
+			<scope>provided</scope>
+		</dependency>
+ -->
+		<!-- Apache Commons -->
+<!--
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+			<scope>provided</scope>
+		</dependency>
+ -->
+	</dependencies>
+
+      <repositories>
+	<repository>
+	                   <id>adobe-public-releases</id>
+	                    <name>Adobe Public Repository</name>
+	                    <url>http://repo.adobe.com/nexus/content/groups/public</url>
+	                    <releases>
+	                        <enabled>true</enabled>
+	                        <updatePolicy>never</updatePolicy>
+	                    </releases>
+	                    <snapshots>
+	                        <enabled>false</enabled>
+	                    </snapshots>
+	                </repository>
+
+     </repositories>
+
+
+     <pluginRepositories>
+    <pluginRepository>
+     <id>adobe-public-releases</id>
+	                    <name>Adobe Public Repository</name>
+	                  <url>http://repo.adobe.com/nexus/content/groups/public</url>
+	               
+    </pluginRepository>
+   
+  </pluginRepositories>
+
+</project>

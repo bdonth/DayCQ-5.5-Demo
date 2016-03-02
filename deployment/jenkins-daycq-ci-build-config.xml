@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset>
+  <actions/>
+  <description>Project name CI build</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>https://your-host/repo-name/trunk/development/code/projectname</remote>
+        <local>.</local>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <excludedRegions></excludedRegions>
+    <includedRegions></includedRegions>
+    <excludedUsers></excludedUsers>
+    <excludedRevprop></excludedRevprop>
+    <excludedCommitMessages></excludedCommitMessages>
+    <workspaceUpdater class="hudson.scm.subversion.UpdateUpdater"/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.TimerTrigger>
+      <spec>@hourly</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>your.project.package structure</groupId>
+    <artifactId>your project-parent</artifactId>
+  </rootModule>
+  <goals>clean install</goals>
+  <mavenName>MAVEN3</mavenName>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <usePrivateRepository>false</usePrivateRepository>
+  <ignoreUpstremChanges>false</ignoreUpstremChanges>
+  <archivingDisabled>false</archivingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <reporters>
+    <hudson.maven.reporters.MavenMailer>
+      <recipients>Email id list </recipients>
+      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.maven.reporters.MavenMailer>
+  </reporters>
+  <publishers>
+    <hudson.plugins.postbuildtask.PostbuildTask>
+      <tasks>
+        <hudson.plugins.postbuildtask.TaskProperties>
+          <logTexts>
+            <hudson.plugins.postbuildtask.LogProperties>
+              <logText>SUCCESS</logText>
+              <operator>AND</operator>
+            </hudson.plugins.postbuildtask.LogProperties>
+          </logTexts>
+          <EscalateStatus>false</EscalateStatus>
+          <RunIfJobSuccessful>false</RunIfJobSuccessful>
+          <script>/opt/app/ci/DayCQ/deployment/copy_daycq.sh) /opt/app/ci/jenkins/jobs/daycq-ci/workspace/ui/target /opt/app/ci/DayCQ/deployment/release&#xd;
+/opt/app/ci/DayCQ/deployment/deploy-package.sh bangda.sapient.com 4502 /opt/app/ci/DayCQ/deployment/release/daycq-ui-1.0.0-SNAPSHOT.${BUILD_NUMBER}.jar daycq-ui-1.0.0-SNAPSHOT.${BUILD_NUMBER}(CHANGE ALL THE VALUES AS PER THE BUILD MACHINE AND DAY CQ QA SEVER)</script>
+        </hudson.plugins.postbuildtask.TaskProperties>
+      </tasks>
+    </hudson.plugins.postbuildtask.PostbuildTask>
+    <hudson.plugins.emailext.ExtendedEmailPublisher>
+      <recipientList>Email id list</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>true</sendToDevelopers>
+            <sendToRequester>false</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+      </configuredTriggers>
+      <contentType>default</contentType>
+      <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT</defaultContent>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers/>
+</maven2-moduleset>
